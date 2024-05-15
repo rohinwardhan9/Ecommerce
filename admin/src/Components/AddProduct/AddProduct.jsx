@@ -4,31 +4,85 @@ import upload_area from "../../assets/upload_area.svg";
 import { useState } from "react";
 const AddProduct = () => {
   const [image, setImage] = useState(false);
+  const [productDetails, setProductDetails] = useState({
+    name: "",
+    image: "",
+    category: "",
+    new_price: "",
+    old_price: "",
+  });
   const imageHandler = (e) => {
     setImage(e.target.files[0]);
   };
+  const changeHandler = (e) => {
+    setProductDetails({ ...productDetails, [e.target.name]: e.target.value });
+  };
+  const Add_Product = async () => {
+    console.log(productDetails);
+    let responseData;
+    let product = productDetails;
+    let formData = new FormData();
+    formData.append("product", image);
 
+    await fetch("http://localhost:4000/upload", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      body: formData,
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        responseData = data;
+      });
+    if (responseData.success) {
+      product.image = responseData.image_url;
+    }
+  };
   return (
     <div className={style.add_product}>
       <div className={style.addproduct_itemfield}>
         <p>Product Title</p>
-        <input type="text" name="name" placeholder="Type here" />
+        <input
+          value={productDetails.name}
+          onChange={changeHandler}
+          type="text"
+          name="name"
+          placeholder="Type here"
+        />
       </div>
       <div className={style.addproduct_price}>
         <div className={style.addproduct_itemfield}>
           <p>Price</p>
-          <input type="text" name="old_price" placeholder="Type Here" />
+          <input
+            value={productDetails.old_price}
+            onChange={changeHandler}
+            type="text"
+            name="old_price"
+            placeholder="Type Here"
+          />
         </div>
         <div className={style.addproduct_itemfield}>
           <p>Offer Price</p>
-          <input type="text" name="new_price" placeholder="Type Here" />
+          <input
+            value={productDetails.new_price}
+            onChange={changeHandler}
+            type="text"
+            name="new_price"
+            placeholder="Type Here"
+          />
         </div>
       </div>
       <div className={style.addproduct_itemfield}>
         <p>Product Category</p>
-        <select type="category" className={style.add_product_selector}>
+        <select
+          value={productDetails.category}
+          onChange={changeHandler}
+          name="category"
+          className={style.add_product_selector}
+        >
           <option value="women">Women</option>
-          <option value="momen">Men</option>
+          <option value="men">Men</option>
           <option value="kid">Kid</option>
         </select>
       </div>
@@ -48,7 +102,14 @@ const AddProduct = () => {
           hidden
         />
       </div>
-      <button className={style.addproduct_btn}>ADD</button>
+      <button
+        onClick={() => {
+          Add_Product();
+        }}
+        className={style.addproduct_btn}
+      >
+        ADD
+      </button>
     </div>
   );
 };
