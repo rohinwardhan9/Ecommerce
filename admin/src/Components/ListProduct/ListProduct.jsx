@@ -16,6 +16,18 @@ const ListProduct = () => {
     fetchInfo();
   }, []);
 
+  const remove_product = async (id) => {
+    await fetch("http://localhost:4000/removeproduct", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ id: id }),
+    });
+    await fetchInfo();
+  };
+
   return (
     <div className={style.list_product}>
       <h1>All Product List</h1>
@@ -31,25 +43,31 @@ const ListProduct = () => {
         <hr />
         {allproducts.map((product, index) => {
           return (
-            <div
-              key={index}
-              className={`${style.listproduct_format_main} ${style.listproduct_format} `}
-            >
-              <img
-                src={product.image}
-                alt=""
-                className={style.listproduct_product_icon}
-              />
-              <p>{product.name}</p>
-              <p>${product.old_price}</p>
-              <p>${product.new_price}</p>
-              <p>{product.category}</p>
-              <img
-                className={style.listproduct_remove_icon}
-                src={cross_icon}
-                alt=""
-              />
-            </div>
+            <>
+              <div
+                key={index}
+                className={`${style.listproduct_format_main} ${style.listproduct_format} `}
+              >
+                <img
+                  src={product.image}
+                  alt=""
+                  className={style.listproduct_product_icon}
+                />
+                <p>{product.name}</p>
+                <p>${product.old_price}</p>
+                <p>${product.new_price}</p>
+                <p>{product.category}</p>
+                <img
+                  onClick={() => {
+                    remove_product(product.id);
+                  }}
+                  className={style.listproduct_remove_icon}
+                  src={cross_icon}
+                  alt=""
+                />
+              </div>
+              <hr />
+            </>
           );
         })}
       </div>
